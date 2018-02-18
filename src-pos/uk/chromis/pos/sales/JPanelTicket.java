@@ -625,7 +625,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jSubtotalEuros.setText(null);
             m_jTaxesEuros.setText(null);
             m_jTotalEuros.setText(null);
-
+            m_jTip.setText(null);
             stateToZero();
             repaint();
 
@@ -688,11 +688,13 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jSubtotalEuros.setText(null);
             m_jTaxesEuros.setText(null);
             m_jTotalEuros.setText(null);
+            m_jTip.setText(null);
             repaint();
         } else {
             m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
             m_jTaxesEuros.setText(m_oTicket.printTax());
             m_jTotalEuros.setText(m_oTicket.printTotal());
+            m_jTip.setText(m_oTicket.printTip());
         }
     }
 
@@ -2246,9 +2248,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel4 = new javax.swing.JPanel();
         m_jTicketId = new javax.swing.JLabel();
         m_jPanTotals = new javax.swing.JPanel();
+        m_jLblTip = new javax.swing.JLabel();
         m_jLblTotalEuros3 = new javax.swing.JLabel();
         m_jLblTotalEuros2 = new javax.swing.JLabel();
         m_jLblTotalEuros1 = new javax.swing.JLabel();
+        m_jTip = new javax.swing.JLabel();
         m_jSubtotalEuros = new javax.swing.JLabel();
         m_jTaxesEuros = new javax.swing.JLabel();
         m_jTotalEuros = new javax.swing.JLabel();
@@ -2589,6 +2593,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanTotals.setPreferredSize(new java.awt.Dimension(375, 60));
         m_jPanTotals.setLayout(new java.awt.GridLayout(2, 3, 4, 0));
 
+        m_jLblTip.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        m_jLblTip.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        m_jLblTip.setLabelFor(m_jTip);
+        m_jLblTip.setText(AppLocal.getIntString("label.tip")); // NOI18N
+        m_jPanTotals.add(m_jLblTip);
+
         m_jLblTotalEuros3.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         m_jLblTotalEuros3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         m_jLblTotalEuros3.setLabelFor(m_jSubtotalEuros);
@@ -2606,6 +2616,19 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jLblTotalEuros1.setLabelFor(m_jTotalEuros);
         m_jLblTotalEuros1.setText(AppLocal.getIntString("label.totalcash")); // NOI18N
         m_jPanTotals.add(m_jLblTotalEuros1);
+
+        m_jTip.setBackground(m_jEditLine.getBackground());
+        m_jTip.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        m_jTip.setForeground(m_jEditLine.getForeground());
+        m_jTip.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        m_jTip.setLabelFor(m_jTaxesEuros);
+        m_jTip.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(153, 153, 153), 1, true));
+        m_jTip.setMaximumSize(new java.awt.Dimension(125, 25));
+        m_jTip.setMinimumSize(new java.awt.Dimension(80, 25));
+        m_jTip.setOpaque(true);
+        m_jTip.setPreferredSize(new java.awt.Dimension(80, 25));
+        m_jTip.setRequestFocusEnabled(false);
+        m_jPanTotals.add(m_jTip);
 
         m_jSubtotalEuros.setBackground(m_jEditLine.getBackground());
         m_jSubtotalEuros.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
@@ -3143,6 +3166,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton m_jEditLine;
     private javax.swing.JButton m_jEnter;
     private javax.swing.JTextField m_jKeyFactory;
+    private javax.swing.JLabel m_jLblTip;
     private javax.swing.JLabel m_jLblTotalEuros1;
     private javax.swing.JLabel m_jLblTotalEuros2;
     private javax.swing.JLabel m_jLblTotalEuros3;
@@ -3163,6 +3187,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JComboBox m_jTax;
     private javax.swing.JLabel m_jTaxesEuros;
     private javax.swing.JLabel m_jTicketId;
+    private javax.swing.JLabel m_jTip;
     private javax.swing.JLabel m_jTotalEuros;
     private javax.swing.JButton m_jUp;
     private javax.swing.JToggleButton m_jaddtax;
