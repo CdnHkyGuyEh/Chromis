@@ -25,24 +25,73 @@ package uk.chromis.pos.payment;
 
 import uk.chromis.format.Formats;
 
+/**
+ *
+ *   
+ */
 public abstract class PaymentInfo {
     
+    /**
+     *
+     * @return
+     */
     public abstract String getName();
 
+    /**
+     *
+     * @return
+     */
     public abstract double getTotal();
 
+    /**
+     *
+     * @return
+     */
     public abstract PaymentInfo copyPayment();
- 
+
+    /**
+     *
+     * @return
+     */
     public abstract String getTransactionID();
 
+    /**
+     *
+     * @return
+     */
     public abstract double getPaid();
 
+    /**
+     *
+     * @return
+     */
     public abstract double getChange();
 
+    /**
+     *
+     * @return
+     */
     public abstract double getTendered();
 
+    public abstract boolean isPaymentOK();
+    /**
+     *
+     * @return
+     */
     public abstract String getCardName();
     
+    public abstract double getTip();
+    
+    public String getCardType() {
+        return null;
+    }
+    public String getMessage() {
+        return null;
+    }
+    /**
+     *
+     * @return
+     */
     public String printTotal() {
         return Formats.CURRENCY.formatValue(getTotal());
     }

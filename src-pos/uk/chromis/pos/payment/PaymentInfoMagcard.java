@@ -22,71 +22,29 @@
 */
 
 package uk.chromis.pos.payment;
-
+package uk.chromis.pos.payment;
+import java.text.DecimalFormat;
+import paymentgateway.Receipt;
+ 
 /**
  *
  *   
  */
 public class PaymentInfoMagcard extends PaymentInfo {
      
-    /**
-     *
-     */
+    public Receipt r;
+    protected boolean ranTrans = false;
     protected double m_dTotal;
-    
-    /**
-     *
-     */
     protected String m_sHolderName;
-
-    /**
-     *
-     */
     protected String m_sCardNumber;
-
-    /**
-     *
-     */
     protected String m_sExpirationDate;
-
-    /**
-     *
-     */
     protected String track1;
-
-    /**
-     *
-     */
     protected String track2;
-
-    /**
-     *
-     */
     protected String track3;
-    
-    /**
-     *
-     */
     protected String m_sTransactionID;
-    
-    /**
-     *
-     */
     protected String m_sAuthorization;    
-
-    /**
-     *
-     */
     protected String m_sErrorMessage;
-
-    /**
-     *
-     */
     protected String m_sReturnMessage;
-
-    /**
-     *
-     */
     protected String m_dCardName =null; 
   
     /** Creates a new instance of PaymentInfoMagcard
@@ -137,6 +95,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
             double dTotal) {
         this(sHolderName, sCardNumber, sExpirationDate, null, null, null, sTransactionID, dTotal);
     }
+
     
     /**
      *
@@ -167,16 +126,262 @@ public class PaymentInfoMagcard extends PaymentInfo {
     public String getName() {
         return "magcard";
     }
+    public void save() {
+        
+        
+    }
+    public boolean isApplicationLabel()
+    {
+        if(r!=null){
+            String s = r.getAppLabel();
+            if(s==null || s.length()==0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+    public String printApplicationLabel()
+    {
+        if(r!=null){
+            String s = r.getAppLabel();
+            if(s==null || s.length()==0)
+                return " ";
+            return s;
+        }
+        return " ";
+    }
+    public boolean isApplicationPreferredName()
+    {
+        if(r!=null){
+            String s = r.getAppPreferredName();
+            if(s==null || s.length()==0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+    public String printApplicationPreferredName()
+    {
+        if(r!=null){
+            String s = r.getAppPreferredName();
+            if(s==null || s.length()==0)
+                return " ";
+            return s;
+        }
+           
+        return " ";
+    }
+    
+    
+    public boolean isEMVAid()
+    {
+        if(r!=null){
+            String s = r.getEmvCompletionData();
+            if(s==null || s.length()==0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+    public String printEMVAid() //Maybe, cant tell tap doesnt work on this shit
+    {
+        if(r!=null){
+            String s = r.getEmvCompletionData();
+            if(s==null || s.length()==0)
+                return " ";
+            return s;
+        }
+        return " ";
+    }
+    
+    public String printVerByPin(){
+        if(r!=null)
+        {
+            if(english()){
+                if ("P".equals(printCVMInd()) || "B".equals(printCVMInd()))
+                {
+                    return "VERIFIED BY PIN";
+                }
+                else if("F".equals(r.getPanEntry()))
+                {
+                    return "CHIP CARD SWIPED";
+                }
+            }
+            else
+            {
+                if ("P".equals(printCVMInd()) || "B".equals(printCVMInd()))
+                {
+                    return "VERIFIEE PAR NIP";
+                }
+                else if("F".equals(r.getPanEntry()))
+                {
+                    return "CARTE A PUCE GLISSEE";
+                }
+            }
+        }
+        return " ";
+    }
+    public boolean isVerByPin()
+    {
+        if(printVerByPin().length()>1)
+            return true;
+        return false;
+    }
+    
+    public String printResponseLine()
+    {
+        if(english()){
+            if(r!=null){
+                String rc = r.getResponseCode();
 
+                int iRc = Integer.parseInt(rc);
+                if(iRc <=49)
+                {
+                    return r.getIsoCode() + " Approved - Thank You "+r.getResponseCode();    
+                }
+                String ct = r.getCardType();
+                int iso = Integer.parseInt(r.getIsoCode());
+                if("D".equals(ct) && (iso==5 || iso == 51 || iso==54 || iso==55 || iso ==57 || iso ==58 || iso == 61 || iso == 62 || iso ==65 || iso == 75 || iso == 82 || iso == 92))
+                    return r.getIsoCode() + " Transaction Not Approved "+r.getResponseCode();    
+
+                else
+                    return r.getIsoCode() +" Transaction Not Completed "+ r.getResponseCode();                        
+            }
+        }
+        else
+        {
+            if(r!=null){
+                String rc = r.getResponseCode();
+
+                int iRc = Integer.parseInt(rc);
+                if(iRc <=49)
+                {
+                    return r.getIsoCode() + " Approuvee - Merci "+r.getResponseCode();    
+                }
+                String ct = r.getCardType();
+                int iso = Integer.parseInt(r.getIsoCode());
+                if("D".equals(ct) && (iso==5 || iso == 51 || iso==54 || iso==55 || iso ==57 || iso ==58 || iso == 61 || iso == 62 || iso ==65 || iso == 75 || iso == 82 || iso == 92))
+                    return r.getIsoCode() + " Opération Refusée "+r.getResponseCode();    
+
+                else
+                    return r.getIsoCode() +" Opération non Complétée "+ r.getResponseCode();                        
+            }
+        }
+        return " ";
+    }
+    
+    public boolean isTVR()
+    {
+        if(r!=null){
+            String s = r.getTvrTCACC();
+            if(s==null || s.length()==0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+    public String printTVR()
+    {
+        if(r!=null){
+            String s = r.getTvrTCACC();
+            if(s==null || s.length()==0)
+                return " ";
+            return s;
+        }
+        return " ";
+    }
+    public boolean isTSI()
+    {
+        if(r!=null){
+            String s = r.getTSI();
+            if(s==null || s.length()==0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+public String printTSI()
+    {
+        if(r!=null){
+            String s = r.getTSI();
+            if(s==null || s.length()==0)
+                return " ";
+            return s;
+        }            
+       return " ";
+    }
+    public boolean isCVMInd()
+    {
+        if(r!=null){
+            String s = r.getCvmIndicator();
+            if(s==null || s.length()==0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+public String printCVMInd()
+{
+     if(r!=null){
+            String s = r.getCvmIndicator();
+            if(s==null || s.length()==0)
+                return " ";
+            return s;
+        }
+           
+       return " ";
+}
+    
+    public String printReferenceNum()
+    {
+        if(r!=null)
+            return r.getRefNum() + " "+r.getPanEntry();
+        return " ";
+    }
+    
+    public String printTransDate()
+    {
+        if(r!=null)
+            return r.getTransDate()+" "+r.getTransTime();
+        return " ";
+    }
+
+    public boolean didTransRun()
+    {
+        if(r==null)
+            return false;
+        String comp = r.getCompleted();
+        if(!ranTrans || "false".equals(comp))
+            return false;
+        return true; 
+        
+    }
     /**
      *
      * @return
      */
     @Override
     public double getTotal() {
+        if(!ranTrans)
+            return m_dTotal;
+        String comp = r.getCompleted();
+        String rc = r.getResponseCode();
+        if(rc==null) return 0;
+        if(comp==null || "false".equals(comp) || Integer.parseInt(r.getResponseCode()) >50)
+            return 0;
         return m_dTotal;
     }
-
+    
+    public String printTotal()
+    {
+        DecimalFormat df2 = new DecimalFormat(".##");
+        return df2.format(getTotal());
+    }
+        public String printTip()
+    {
+        DecimalFormat df2 = new DecimalFormat(".##");
+        return df2.format(getTip());
+    }
     /**
      *
      * @return
@@ -198,8 +403,32 @@ public class PaymentInfoMagcard extends PaymentInfo {
      * @return
      */
     @Override
-  public String getCardName() {
-       return getCardType(m_sCardNumber);
+  public String getCardName() {      
+      String cardName = getCardType();
+      if("INTERAC".equals(cardName.toUpperCase())){
+        int acct = Integer.parseInt( r.getAccountType());
+        if(english()){
+            if(acct==0)
+                return "INTERAC";
+            if(acct==1)
+                return "INTERAC CHEQUING";
+            if(acct==2)
+                return "INTERAC SAVINGS";
+            if(acct==4)
+                return "INTERAC";
+        }
+        else{
+            if(acct==0)
+                return "INTERAC";
+            if(acct==1)
+                return "INTERAC CHEQUE";
+            if(acct==2)
+                return "INTERAC ÉPARGNE";
+            if(acct==4)
+                return "INTERAC";
+        }
+      }
+      return getCardType();
    }
   
     /**
@@ -207,7 +436,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
      * @return
      */
     public String getCardNumber() {
-        return m_sCardNumber;
+        return "************"+r.getPan();
     }
 
     /**
@@ -227,31 +456,80 @@ public class PaymentInfoMagcard extends PaymentInfo {
         return m_sTransactionID;
     }
 
+    public boolean isCredit(){
+        String ct = getCardType();
+        if("INTERAC".equals(ct))
+            return false;
+        return true;
+    }
+    public boolean english(){
+        String l = r.getLang();
+        if("FRENCH".equals(l.toUpperCase()))
+            return false;
+        return true;       
+    }
+    
+    public boolean isTip()
+    {
+        if(getTip()<=0)
+            return false;
+        return true;
+    }
+    
     /**
      *
      * @param sCardNumber
      * @return
      */
-    public String getCardType(String sCardNumber){
+    @Override
+    public String getCardType(){
         String c = "UNKNOWN";
-        
-       if (sCardNumber.startsWith("4")) {
-           c = "VISA";
-       } else if (sCardNumber.startsWith("6")) {
-           c = "DISC";
-       } else if (sCardNumber.startsWith("5")) {
-           c = "MAST";
-       } else if (sCardNumber.startsWith("34") || sCardNumber.startsWith("37")) {
-           c = "AMEX";
-       } else if (sCardNumber.startsWith("3528") || sCardNumber.startsWith("3589")) {
-           c = "JCB";
-       } else if (sCardNumber.startsWith("3")) {
-           c = "DINE";
-       }
+        String ct = r.getCardType();
+       if (null != ct) switch (ct.trim()) {
+            case "V":
+                c = "VISA";
+                break;
+            case "DS":
+            case "NO":
+                c = "DISCOVER";
+                break;
+            case "M":
+                c = "MASTERCARD";
+                break;
+            case "AX":
+                c = "AMERICAN EXPRESS";
+                break;
+            case "C":
+            case "C1":
+                c = "JCB";
+                break;
+            case "SE":
+                c = "SEARS";
+                break;
+            case "P":
+            case "D":
+                c="INTERAC";
+                break;
+            default:
+                break;
+        }
        m_dCardName = c;
        return c;
    }
    
+    public boolean isSignatureRequired()
+    {
+        String ct = getCardType();
+        if("INTERAC".equals(ct.toUpperCase()))
+            return false;
+        String panEntry = r.getPanEntry();
+        String cvm = r.getCvmIndicator();
+        if((cvm == null  && !"T".equals(panEntry)) 
+                || "S".equals(cvm) || "B".equals(cvm) || (cvm.length() ==0 && !"T".equals(panEntry)))
+            return true;
+        return false;
+    }
+    
     /**
      * Get tracks of magnetic card.
      *   Framing characters: 
@@ -304,7 +582,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
      * @return
      */
     public String getMessage() {
-        return m_sErrorMessage;
+        return m_sAuthorization;
     }
     
     /**
@@ -316,7 +594,14 @@ public class PaymentInfoMagcard extends PaymentInfo {
         m_sAuthorization = null;
         m_sErrorMessage = sMessage + "\n" + moreInfo;
     }
+    
+    public String printDateTime()
+    {
+        return r.getTransDate()+" " + r.getTransTime();
+    }
 
+    
+    
     /**
      *
      * @param returnMessage
@@ -345,20 +630,28 @@ public class PaymentInfoMagcard extends PaymentInfo {
         m_sReturnMessage = sReturnMessage;
         m_sErrorMessage = null;
     }  
+    
+    @Override
+    public double getTip()
+    {
+        if(!isPaymentOK())
+            return 0;
+        String tip = r.getTipAmount();
+        if(tip!=null)
+        {
+            return Double.parseDouble(tip);
+        }
+        return 0;
+    }
+            
 
+    
     /**
      *
      * @return
      */
     public String printCardNumber() {
-        // hide start numbers
-        if (m_sCardNumber.length() > 4) {
-
-            return m_sCardNumber.substring(0, m_sCardNumber.length()-4).replaceAll(".", "*") +
-                    m_sCardNumber.substring(m_sCardNumber.length() - 4);
-        } else {
-            return "**** **** **** ****";
-        }
+        return "************"+r.getPan();
     }
 
     /**
@@ -391,7 +684,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
      */
     @Override
     public double getPaid() {
-        return m_dTotal; 
+        return getTotal(); 
     }
 
     /**
@@ -400,7 +693,20 @@ public class PaymentInfoMagcard extends PaymentInfo {
      */
     @Override
     public double getChange(){
-       return 0.00;
+        /*if(!didTransRun())
+            return 0;
+        String rc = r.getResponseCode();
+        if(rc==null) return 0;
+        if(Integer.parseInt(r.getResponseCode()) >50)
+            return 0;
+        try {
+            return Double.parseDouble(r.getTipAmount());
+        }
+        catch(NumberFormatException e)
+        {
+            return 0;
+        }*/
+        return 0;
    }   
 
     /**
@@ -409,7 +715,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
      */
     @Override
     public double getTendered() {
-        return 0.00;
+        return getTotal();
     }
   
 }

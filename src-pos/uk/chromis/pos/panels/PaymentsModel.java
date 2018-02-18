@@ -23,10 +23,14 @@
 
 package uk.chromis.pos.panels;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
 import uk.chromis.basic.BasicException;
 import uk.chromis.data.loader.DataRead;
@@ -35,6 +39,7 @@ import uk.chromis.data.loader.SerializableRead;
 import uk.chromis.data.loader.SerializerReadBasic;
 import uk.chromis.data.loader.SerializerReadClass;
 import uk.chromis.data.loader.SerializerWriteString;
+import uk.chromis.data.loader.Session;
 import uk.chromis.data.loader.StaticSentence;
 import uk.chromis.format.Formats;
 import uk.chromis.pos.forms.AppLocal;
@@ -70,6 +75,7 @@ public class PaymentsModel {
     private Integer m_iSales;
     private Double m_dSalesBase;
     private Double m_dSalesTaxes;
+    private Double m_dSalesTips;
     private Double m_dSalesTaxNet;
     private java.util.List<SalesLine> m_lsales;
 
@@ -97,6 +103,7 @@ public class PaymentsModel {
         p.m_iSales = null;
         p.m_dSalesBase = null;
         p.m_dSalesTaxes = null;
+        p.m_dSalesTips = null;
         p.m_dSalesTaxNet = null;
 
         p.m_iProductSalesRows = 0;
@@ -161,9 +168,9 @@ public class PaymentsModel {
         }
 
         // Payments
-        Object[] valtickets = (Object[]) new StaticSentence(app.getSession(), "SELECT COUNT(*), SUM(PAYMENTS.TOTAL) "
+        Object[] valtickets = (Object[]) new StaticSentence(app.getSession(), "SELECT COUNT(*), SUM(PAYMENTS.TOTAL), SUM(PAYMENTS.TIP) "
                 + "FROM PAYMENTS, RECEIPTS "
-                + "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.INT, Datas.DOUBLE}))
+                + "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ?", SerializerWriteString.INSTANCE, new SerializerReadBasic(new Datas[]{Datas.INT, Datas.DOUBLE, Datas.DOUBLE}))
                 .find(app.getActiveCashIndex());
 
         if (valtickets == null) {
@@ -172,12 +179,13 @@ public class PaymentsModel {
         } else {
             p.m_iPayments = (Integer) valtickets[0];
             p.m_dPaymentsTotal = (Double) valtickets[1];
+            p.m_dSalesTips = (Double) valtickets[2];
         }
 
-        List l = new StaticSentence(app.getSession(), "SELECT PAYMENTS.PAYMENT, SUM(PAYMENTS.TOTAL), PAYMENTS.NOTES "
+        List l = new StaticSentence(app.getSession(), "SELECT PAYMENTS.PAYMENT,PAYMENTS.CARDNAME, SUM(PAYMENTS.TOTAL), SUM(PAYMENTS.TIP), PAYMENTS.NOTES "
                 + "FROM PAYMENTS, RECEIPTS "
                 + "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ? "
-                + "GROUP BY PAYMENTS.PAYMENT, PAYMENTS.NOTES", SerializerWriteString.INSTANCE, new SerializerReadClass(PaymentsModel.PaymentsLine.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
+                + "GROUP BY PAYMENTS.PAYMENT, PAYMENTS.CARDNAME, PAYMENTS.NOTES", SerializerWriteString.INSTANCE, new SerializerReadClass(PaymentsModel.PaymentsLine.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
                 .list(app.getActiveCashIndex());
 
         if (l == null) {
@@ -463,7 +471,10 @@ public class PaymentsModel {
     public String printSalesTaxes() {
         return Formats.CURRENCY.formatValue(m_dSalesTaxes);
     }
-
+     
+    public String printSalesTips() {
+        return Formats.CURRENCY.formatValue(m_dSalesTips);
+    }
     /**
      *
      * @return
@@ -1000,7 +1011,9 @@ public class PaymentsModel {
     public static class PaymentsLine implements SerializableRead {
 
         private String m_PaymentType;
+        private String m_PaymentCardType;
         private Double m_PaymentValue;
+        private Double m_PaymentTip;
         private String s_PaymentReason;
 
         /**
@@ -1011,8 +1024,10 @@ public class PaymentsModel {
         @Override
         public void readValues(DataRead dr) throws BasicException {
             m_PaymentType = dr.getString(1);
-            m_PaymentValue = dr.getDouble(2);
-            s_PaymentReason = dr.getString(3) == null ? "" : dr.getString(3);
+            m_PaymentCardType = dr.getString(2);
+            m_PaymentValue = dr.getDouble(3);
+            m_PaymentTip = dr.getDouble(4);
+            s_PaymentReason = dr.getString(5) == null ? "" : dr.getString(3);
         }
 
         /**
@@ -1020,6 +1035,10 @@ public class PaymentsModel {
          * @return
          */
         public String printType() {
+            if("magcard".equals(m_PaymentType))
+            {
+                return m_PaymentCardType;
+            }
             return AppLocal.getIntString("transpayment." + m_PaymentType);
         }
 
@@ -1028,6 +1047,10 @@ public class PaymentsModel {
          * @return
          */
         public String getType() {
+            if("magcard".equals(m_PaymentType))
+            {
+                return m_PaymentCardType;
+            }
             return m_PaymentType;
         }
 

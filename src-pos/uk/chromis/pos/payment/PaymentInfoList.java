@@ -26,15 +26,26 @@ package uk.chromis.pos.payment;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ *
+ *
+ */
 public class PaymentInfoList {
 
     private final LinkedList<PaymentInfo> m_apayment;
     private LinkedList<PaymentInfo> tmp_apayment;
 
+    /**
+     * Creates a new instance of PaymentInfoComposed
+     */
     public PaymentInfoList() {
         m_apayment = new LinkedList<>();
     }
 
+    /**
+     *
+     * @return
+     */
     public double getTotal() {
 
         double dTotal = 0.0;
@@ -47,14 +58,25 @@ public class PaymentInfoList {
         return dTotal;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isEmpty() {
         return m_apayment.isEmpty();
     }
 
+    /**
+     *
+     * @param p
+     */
     public void add(PaymentInfo p) {
         m_apayment.addLast(p);
     }
 
+    /**
+     *
+     */
     public void removeLast() {
         m_apayment.removeLast();
     }
@@ -75,10 +97,8 @@ public class PaymentInfoList {
             }
         }
         if (cash) {
-            //if (dPaidOther == 0.00) {
-            if (dPaidCash < m_dTotal - dPaidOther) {
-                // m_apayment.add(new PaymentInfoCash_original(m_dTotal, dPaidCash));
-                m_apayment.add(new PaymentInfoCash_original(dPaidCash, dPaidCash));
+            if (dPaidOther == 0.00) {
+                m_apayment.add(new PaymentInfoCash_original(m_dTotal, dPaidCash));
             } else {
                 m_apayment.add(new PaymentInfoCash_original(m_dTotal - dPaidOther, dPaidCash));
             }
@@ -86,6 +106,10 @@ public class PaymentInfoList {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public LinkedList<PaymentInfo> getPayments() {
         return m_apayment;
     }

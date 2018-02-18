@@ -294,10 +294,13 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             msg.show(this);
         } else {
             try {
+                JBatchRecord[] jbr = PaymentGatewayExt.CloseBatch();
+
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
                 script.put("payments", m_PaymentsToClose);
                 script.put("nosales", result.toString());
                 script.put("hourlysales", hSales);
+                script.put("moneris",jbr);
                 m_TTP.printTicket(script.eval(sresource).toString());
             } catch (ScriptException | TicketPrinterException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);

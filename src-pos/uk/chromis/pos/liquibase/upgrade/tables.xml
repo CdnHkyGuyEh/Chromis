@@ -41,6 +41,19 @@
         </preConditions>                      
         <customChange class="uk.chromis.pos.util.SyncFlag" />                                       
     </changeSet>
+        <changeSet author="JHUNT" id="Create mag card data columns in payment tbl for proper cashout1" >    
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="TIP" tableName="PAYMENTS"/>
+            </not>
+        </preConditions> 
+                       
+        <addColumn tableName="PAYMENTS">            
+            <column name="TIP"  type="double precision" defaultValueNumeric="0.0">
+                <constraints nullable="false"/>         
+            </column>                    
+        </addColumn>                                               
+    </changeSet>
     
 </databaseChangeLog>
 

@@ -22,6 +22,7 @@
 */
 
 package uk.chromis.pos.forms;
+package uk.chromis.pos.forms;
 
 import java.util.HashMap;
 
@@ -34,6 +35,7 @@ public class Payments {
     private Double tendered;
     private HashMap paymentPaid;
     private HashMap paymentTendered;
+    private HashMap paymentTip;
     private HashMap rtnMessage;
     private String name;
 
@@ -44,6 +46,7 @@ public class Payments {
     paymentPaid =  new HashMap();
     paymentTendered =  new HashMap();
     rtnMessage = new HashMap();
+    paymentTip = new HashMap();
      
     }
 
@@ -54,14 +57,16 @@ public class Payments {
      * @param pTendered
      * @param rtnMsg
      */
-    public void addPayment (String pName, Double pAmountPaid, Double pTendered, String rtnMsg){
+    public void addPayment (String pName, Double pAmountPaid, Double pTendered,Double pTip, String rtnMsg){
         if (paymentPaid.containsKey(pName)){
             paymentPaid.put(pName,Double.parseDouble(paymentPaid.get(pName).toString()) + pAmountPaid);
             paymentTendered.put(pName,Double.parseDouble(paymentTendered.get(pName).toString()) + pTendered); 
+            paymentTip.put(pName,Double.parseDouble(paymentTendered.get(pName).toString()) + pTip); 
             rtnMessage.put(pName, rtnMsg);
         }else {    
             paymentPaid.put(pName, pAmountPaid);
             paymentTendered.put(pName,pTendered);
+            paymentTip.put(pName,pTip);
             rtnMessage.put(pName, rtnMsg);
         }        
 }
@@ -74,7 +79,14 @@ public class Payments {
     public Double getTendered (String pName){
     return(Double.parseDouble(paymentTendered.get(pName).toString()));
 }
-
+    /**
+     *
+     * @param pName
+     * @return
+     */
+    public Double getTip(String pName){
+        return(Double.parseDouble(paymentTip.get(pName).toString()));
+    }
     /**
      *
      * @param pName

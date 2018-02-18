@@ -1192,11 +1192,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     : loadCustomerExt(customerid));
 
             ticket.setLines(new PreparedSentence(s, "SELECT L.TICKET, L.LINE, L.PRODUCT, L.ATTRIBUTESETINSTANCE_ID, L.UNITS, L.PRICE, T.ID, T.NAME, T.CATEGORY, T.CUSTCATEGORY, T.PARENTID, T.RATE, T.RATECASCADE, T.RATEORDER, L.ATTRIBUTES, L.REFUNDQTY  "
-                    + "FROM TICKETLINES L, TAXES T WHERE L.TAXID = T.ID AND L.TICKET = ? ORDER BY L.LINE", SerializerWriteString.INSTANCE, new SerializerReadClass(TicketLineInfo.class
-                    )).list(ticket.getId()));
+                   + "FROM TICKETLINES L, TAXES T WHERE L.TAXID = T.ID AND L.TICKET = ? ORDER BY L.LINE", SerializerWriteString.INSTANCE, new SerializerReadClass(TicketLineInfo.class)).list(ticket.getId()));
             ticket.setPayments(new PreparedSentence(s //                    , "SELECT PAYMENT, TOTAL, TRANSID TENDERED FROM PAYMENTS WHERE RECEIPT = ?" 
-                    , "SELECT PAYMENT, TOTAL, TRANSID, TENDERED, CARDNAME FROM PAYMENTS WHERE RECEIPT = ? ", SerializerWriteString.INSTANCE, new SerializerReadClass(PaymentInfoTicket.class
-                    )).list(ticket.getId()));
+                    , "SELECT PAYMENT, TOTAL,TIP, TRANSID, TENDERED, CARDNAME FROM PAYMENTS WHERE RECEIPT = ?", SerializerWriteString.INSTANCE, new SerializerReadClass(PaymentInfoTicket.class)).list(ticket.getId()));
         }
         return ticket;
     }
@@ -1301,7 +1299,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 final Payments payments = new Payments();
                 SentenceExec paymentinsert = new PreparedSentence(s, "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, TRANSID, RETURNMSG, TENDERED, CARDNAME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", SerializerWriteParams.INSTANCE);
 
-                for (final PaymentInfo p : ticket.getPayments()) {
+              /*  for (final PaymentInfo p : ticket.getPayments()) {
                     payments.addPayment(p.getName(), p.getTotal(), p.getPaid(), ticket.getReturnMessage());
                 }
 
@@ -1325,9 +1323,41 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                             setString(8, getCardName);
                             payments.removeFirst(pName);
                         }
+                    });*/
+
+            for (final PaymentInfo p : ticket.getPayments()) {
+              //  payments.addPayment(p.getName(),p.getTotal(), p.getPaid(),ticket.getReturnMessage());  
+                    paymentinsert.exec(new DataParams() {
+                       @Override
+                        public void writeValues() throws BasicException {
+                            pName = p.getName();
+                            getTotal = p.getTotal();
+                            getTendered = p.getPaid();
+                            getRetMsg = p.getMessage();
+                            getCardName = p.getCardName();
+                            
+                          //  payments.removeFirst(pName);                        
+            
+                            setString(1, UUID.randomUUID().toString());
+                            setString(2, ticket.getId());
+                            setString(3, pName);
+                            setDouble(4, getTotal);
+                            setString(5, p.getTransactionID());
+                            setBytes(6, (byte[]) Formats.BYTEA.parseValue(getRetMsg));
+                            setDouble(7, getTendered);
+                            setString(8, getCardName);     
+                            setDouble(9, p.getTip());
+                            setString(10, null);
+                           // payments.removeFirst(pName);
+                        }
                     });
 
+
+
                     if ("debt".equals(pName) || "debtpaid".equals(pName)) {
+                        System.out.println("pName = " + pName);
+                        System.out.println("Current debt " + ticket.getCustomer().getCurdebt());
+                        System.out.println("date " + ticket.getCustomer().getCurdate());
                         // udate customer fields...
                         ticket.getCustomer().updateCurDebt(getTotal, ticket.getDate());
                         // save customer fields...

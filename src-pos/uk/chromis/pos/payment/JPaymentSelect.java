@@ -672,25 +672,34 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     }//GEN-LAST:event_m_jTabPaymentStateChanged
 
     private void m_jButtonOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonOKActionPerformed
-
         PaymentInfo returnPayment = ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).executePayment();
 
         double change = AppConfig.getInstance().getDouble("till.changelimit");
-        if (returnPayment != null) {
-            if (returnPayment.getChange() > change && AppConfig.getInstance().getBoolean("till.enablechangelimit")) {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null,
-                        AppLocal.getIntString("message.largechange"),
-                        "Check", JOptionPane.WARNING_MESSAGE);
-                //Reset the payment tabs
-                addTabs();
-            } else if (returnPayment != null) {
-                m_aPaymentInfo.add(returnPayment);
-                // always ensure cash is last in the list for payment
-                m_aPaymentInfo.sortPayments(m_dTotal);
+        if (returnPayment.getChange() > change && AppConfig.getInstance().getBoolean("till.enablechangelimit")) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null,
+                    AppLocal.getIntString("message.largechange"),
+                    "Check", JOptionPane.WARNING_MESSAGE);
+            //Reset the payment tabs
+            addTabs();
+        } else if (returnPayment != null) {
+            m_dTotal+= returnPayment.getTip();
+            m_aPaymentInfo.add(returnPayment);
+            // always ensure cash is last in the list for payment
+            m_aPaymentInfo.sortPayments(m_dTotal);
+            if (returnPayment.getName().equals("magcard")) {
+               if(returnPayment.getTotal()>0){
+                   accepted=true;
+                   dispose();
+               }
+               else
+                   accepted=false;
+            }
+            else{
                 accepted = true;
                 dispose();
             }
+            
         }
     }//GEN-LAST:event_m_jButtonOKActionPerformed
 

@@ -208,7 +208,13 @@ public class StartPOS {
                 }
                 String hostname = AppConfig.getInstance().getProperty("machine.hostname");
                 TicketInfo.setHostname(hostname);
-
+try{
+                Bridge.init();
+                Bridge.LoadAndRegisterAssemblyFrom(new File("d:\\ChromisPOS-master\\lib\\Payment2.j4n.dll"));
+                
+                PaymentGatewayExt.initialize(); //prime moneris
+}
+catch (Exception e){ }
                 String screenmode = AppConfig.getInstance().getProperty("machine.screenmode");
                 if ("fullscreen".equals(screenmode)) {
                     JRootKiosk rootkiosk = new JRootKiosk();
