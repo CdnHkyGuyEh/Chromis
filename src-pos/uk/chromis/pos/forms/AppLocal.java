@@ -29,7 +29,7 @@ public class AppLocal {
 
     public static final String APP_NAME = "Chromis POS";
     public static final String APP_ID = "chromispos";
-    public static final String APP_VERSION = "0.81.MONERIS";
+    public static final String APP_VERSION = "0.81.M2";
     public static final Integer APP_VERSIONINT = 20170829;
     public static final String APP_DEMO = "";
    

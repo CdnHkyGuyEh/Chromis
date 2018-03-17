@@ -22,7 +22,6 @@
 */
 
 package uk.chromis.pos.forms;
-package uk.chromis.pos.forms;
 
 import java.util.HashMap;
 

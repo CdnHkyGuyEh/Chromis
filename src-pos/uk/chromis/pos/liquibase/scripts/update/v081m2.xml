@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+
+
+    <property name="boolean.type" value="boolean" dbms="derby, postgresql"/>
+    <property name="boolean.type" value="bit" dbms="mysql"/>
+   
+    <property name="blob.type" value="blob" dbms="derby"/>
+    <property name="blob.type" value="bytea" dbms="postgresql"/>
+    <property name="blob.type" value="mediumblob" dbms="mysql"/>
+     
+        
+    <changeSet author="JHUNT" id="Create mag card data columns in payment tbl for proper cashout1" >    
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="TIP" tableName="PAYMENTS"/>
+            </not>
+        </preConditions> 
+                       
+        <addColumn tableName="PAYMENTS">            
+            <column name="TIP"  type="double precision" defaultValueNumeric="0.0">
+                <constraints nullable="false"/>         
+            </column>
+                
+        </addColumn>                                               
+    </changeSet>
+    <changeSet author="JHUNT" id="Create mag card type data columns in payment tbl for proper cashout" >    
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="CARDTYPE" tableName="PAYMENTS"/>
+            </not>
+        </preConditions> 
+                       
+        <addColumn tableName="PAYMENTS">            
+            <column name="CARDTYPE" type="varchar(255)"/>            
+        </addColumn>                                               
+    </changeSet>
+  
+  <changeSet author="Chromis POS" id="Update to Chromis to v0.81.M2">    
+        <update tableName="APPLICATIONS">
+            <column name="VERSION" value="0.81.M2"/>   
+            <column name="VERSIONINT" valueNumeric="20180317"/>         
+        </update>  
+    </changeSet>   
+    
+    
+</databaseChangeLog>
+

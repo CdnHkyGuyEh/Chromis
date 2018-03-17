@@ -39,6 +39,8 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead {
     private String m_sName;
     private String m_transactionID;
     private double m_dTendered;
+    private double m_dTip;
+    
     //  private double m_change;
     private double m_dChange;
     private String m_dCardName = null;
@@ -85,14 +87,22 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead {
     public void readValues(DataRead dr) throws BasicException {
         m_sName = dr.getString(1);
         m_dTicket = dr.getDouble(2);
-        m_transactionID = dr.getString(3);
-        if (dr.getDouble(4) != null) {
-            m_dTendered = dr.getDouble(4);
+        if (dr.getDouble(3) != null) {
+            m_dTip = dr.getDouble(3);
         }
-        m_dCardName = dr.getString(5);
+        m_transactionID = dr.getString(4);
+        if (dr.getDouble(5) != null) {
+            m_dTendered = dr.getDouble(5);
+        }
+        
+        m_dCardName = dr.getString(6);
         m_dChange = m_dTendered - m_dTicket;
     }
 
+    public boolean isPaymentOK() {
+        return m_dTendered >0; //if 0 then it failed.
+    }
+    
     /**
      *
      * @return
@@ -143,7 +153,10 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead {
         }
 
     }
-
+    @Override
+    public double getTip() {
+        return m_dTip;
+    }
     /**
      *
      * @return

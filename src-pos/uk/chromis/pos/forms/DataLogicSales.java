@@ -1297,7 +1297,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 }
 
                 final Payments payments = new Payments();
-                SentenceExec paymentinsert = new PreparedSentence(s, "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, TRANSID, RETURNMSG, TENDERED, CARDNAME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", SerializerWriteParams.INSTANCE);
+                SentenceExec paymentinsert = new PreparedSentence(s, "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, TRANSID, RETURNMSG, TENDERED, CARDNAME,TIP,CARDTYPE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", SerializerWriteParams.INSTANCE);
 
               /*  for (final PaymentInfo p : ticket.getPayments()) {
                     payments.addPayment(p.getName(), p.getTotal(), p.getPaid(), ticket.getReturnMessage());

@@ -55,6 +55,8 @@ import org.apache.commons.lang.time.DateUtils;
 import uk.chromis.pos.dbmanager.DbManager;
 import uk.chromis.pos.util.AltEncrypter;
 import uk.chromis.pos.util.DbUtils;
+import net.sf.jni4net.Bridge;
+import uk.chromis.pos.payment.PaymentGatewayExt;
 
 public class StartPOS {
 
@@ -210,7 +212,7 @@ public class StartPOS {
                 TicketInfo.setHostname(hostname);
 try{
                 Bridge.init();
-                Bridge.LoadAndRegisterAssemblyFrom(new File("d:\\ChromisPOS-master\\lib\\Payment2.j4n.dll"));
+                Bridge.LoadAndRegisterAssemblyFrom(new File("d:\\Chromis\\lib\\Payment2.j4n.dll"));
                 
                 PaymentGatewayExt.initialize(); //prime moneris
 }

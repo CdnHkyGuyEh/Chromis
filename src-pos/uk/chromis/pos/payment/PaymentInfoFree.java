@@ -92,6 +92,13 @@ public class PaymentInfoFree extends PaymentInfo {
     public double getChange(){
        return (0.00);
    }
+    @Override
+    public double getTip() {
+        return 0;
+    }
+    
+    @Override
+    public boolean isPaymentOK() { return true; }
     
     /**
      *

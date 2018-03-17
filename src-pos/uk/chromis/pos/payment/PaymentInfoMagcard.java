@@ -22,9 +22,9 @@
 */
 
 package uk.chromis.pos.payment;
-package uk.chromis.pos.payment;
 import java.text.DecimalFormat;
 import paymentgateway.Receipt;
+import uk.chromis.format.Formats;
  
 /**
  *
@@ -373,14 +373,13 @@ public String printCVMInd()
     }
     
     public String printTotal()
-    {
-        DecimalFormat df2 = new DecimalFormat(".##");
-        return df2.format(getTotal());
+    {            
+        return Formats.CURRENCY.formatValue(getTotal());
     }
-        public String printTip()
+    
+    public String printTip()
     {
-        DecimalFormat df2 = new DecimalFormat(".##");
-        return df2.format(getTip());
+        return Formats.CURRENCY.formatValue(getTip());
     }
     /**
      *
@@ -407,9 +406,13 @@ public String printCVMInd()
       String cardName = getCardType();
       if("INTERAC".equals(cardName.toUpperCase())){
         int acct = Integer.parseInt( r.getAccountType());
+        String pan = r.getPanEntry();
         if(english()){
-            if(acct==0)
+            if(acct==0){
+                if("H".equals(pan))
+                    return "INTERAC FLASH DEFAULT";
                 return "INTERAC";
+            }
             if(acct==1)
                 return "INTERAC CHEQUING";
             if(acct==2)
@@ -418,8 +421,11 @@ public String printCVMInd()
                 return "INTERAC";
         }
         else{
-            if(acct==0)
+            if(acct==0){
+                if("H".equals(pan))
+                    return "INTERAC DEFAUT FLASH";
                 return "INTERAC";
+            }
             if(acct==1)
                 return "INTERAC CHEQUE";
             if(acct==2)
@@ -520,16 +526,16 @@ public String printCVMInd()
     public boolean isSignatureRequired()
     {
         String ct = getCardType();
-        if("INTERAC".equals(ct.toUpperCase()))
+        
+        if(ct!=null && "INTERAC".equals(ct.toUpperCase()))
             return false;
         String panEntry = r.getPanEntry();
         String cvm = r.getCvmIndicator();
         if((cvm == null  && !"T".equals(panEntry)) 
-                || "S".equals(cvm) || "B".equals(cvm) || (cvm.length() ==0 && !"T".equals(panEntry)))
+                || "S".equals(cvm) || "B".equals(cvm) || (cvm != null && cvm.length() ==0 && !"T".equals(panEntry)))
             return true;
         return false;
     }
-    
     /**
      * Get tracks of magnetic card.
      *   Framing characters: 

@@ -105,7 +105,14 @@ public class PaymentInfoCash_original extends PaymentInfo {
     public double getChange(){
        return m_dPaid - m_dTotal;
    }
-
+        @Override
+    public boolean isPaymentOK() { return true; }
+    
+    
+@Override
+    public double getTip() {
+        return 0;
+    }
     /**
      *
      * @return
