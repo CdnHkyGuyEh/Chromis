@@ -40,8 +40,14 @@ public class Pay extends system.Object {
     @net.sf.jni4net.attributes.ClrMethod("(LSystem/String;LSystem/String;)LPaymentGateway/Receipt;")
     public native paymentgateway.Receipt Purchase(java.lang.String orderId, java.lang.String amount);
     
+    @net.sf.jni4net.attributes.ClrMethod("(LSystem/String;LSystem/String;LSystem/String;LSystem/String;)LPaymentGateway/Receipt;")
+    public native paymentgateway.Receipt Purchase(java.lang.String orderId, java.lang.String amount, java.lang.String ccNum, java.lang.String expiry);
+    
     @net.sf.jni4net.attributes.ClrMethod("(LSystem/String;LSystem/String;LSystem/String;)LPaymentGateway/Receipt;")
     public native paymentgateway.Receipt Refund(java.lang.String orderId, java.lang.String transId, java.lang.String amount);
+    
+    @net.sf.jni4net.attributes.ClrMethod("(LSystem/String;LSystem/String;LSystem/String;LSystem/String;LSystem/String;)LPaymentGateway/Receipt;")
+    public native paymentgateway.Receipt Refund(java.lang.String orderId, java.lang.String transId, java.lang.String amount, java.lang.String ccNum, java.lang.String expiry);
     
     @net.sf.jni4net.attributes.ClrMethod("()[LPaymentGateway/BatchRecord;")
     public native paymentgateway.BatchRecord[] CloseBatch();

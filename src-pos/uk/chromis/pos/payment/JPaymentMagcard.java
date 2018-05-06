@@ -93,7 +93,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
                 jlblMessage.setText(payinfo.getMessage());
                 //revalidate();
             }
-            return null;
+            return payinfo;
         }
     }
 

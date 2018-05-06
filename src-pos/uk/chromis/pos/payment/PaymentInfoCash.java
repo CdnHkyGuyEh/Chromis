@@ -62,7 +62,9 @@ public class PaymentInfoCash extends PaymentInfo {
         this(dTotal, dTendered, dPaid);
         this.prePayAmount = prePayAmount;
     }
-
+    public boolean isAuthorization() {
+        return false;
+    }
     /**
      *
      * @return

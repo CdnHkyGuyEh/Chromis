@@ -47,12 +47,12 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
         
         initComponents();  
         
-        m_jHolderName.addPropertyChangeListener("Edition", new RecalculateName());
+        
         m_jCardNumber.addPropertyChangeListener("Edition", new RecalculateName());
         m_jExpirationDate.addPropertyChangeListener("Edition", new RecalculateName());
         
         
-        m_jHolderName.addEditorKeys(m_jKeys);
+        
         m_jCardNumber.addEditorKeys(m_jKeys);
         m_jExpirationDate.addEditorKeys(m_jKeys);
 
@@ -80,16 +80,16 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
         
         resetState();
         
-        m_jHolderName.activate();
+        m_jCardNumber.activate();
     }
     
     private void resetState() {
         
-        m_notifier.setStatus(false, false);  
+        m_notifier.setStatus(true,true);  
               
-        m_jHolderName.setText(null);
         m_jCardNumber.setText(null);
         m_jExpirationDate.setText(null);
+        
     }
     
     /**
@@ -101,7 +101,7 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
         
         if (m_dTotal > 0.0) {
             return new PaymentInfoMagcard(
-                    m_jHolderName.getText(),
+                    "",
                     m_jCardNumber.getText(), 
                     m_jExpirationDate.getText(),
                     null,
@@ -111,7 +111,7 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
                     m_dTotal);
         } else {
             return new PaymentInfoMagcardRefund(
-                    m_jHolderName.getText(),
+                    "",
                     m_jCardNumber.getText(), 
                     m_jExpirationDate.getText(),
                     null,
@@ -131,13 +131,13 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
     }  
     
     private boolean isValidHolder() {
-        return !(m_jHolderName.getText() == null || m_jHolderName.getText().equals(""));
+        return true;
     }
     private boolean isValidCardNumber() {
-        return (LuhnAlgorithm.checkCC(m_jCardNumber.getText()) && m_jCardNumber.getText().length()>13 && m_jCardNumber.getText().length()<20);
+        return (LuhnAlgorithm.checkCC(m_jCardNumber.getText()) && m_jCardNumber.getText().length()>13 && m_jCardNumber.getText().length()<20) || m_jCardNumber.getText().length()==0;
     }
     private boolean isValidExpirationDate() {
-        return !(m_jExpirationDate.getText() == null || m_jExpirationDate.getText().length() != 4);
+        return (m_jExpirationDate.getText() != null && (m_jExpirationDate.getText().length() == 4 || m_jExpirationDate.getText().length() == 0)) ;
     }
 
     
@@ -155,8 +155,6 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
         jPanel4 = new javax.swing.JPanel();
         m_jCardNumber = new uk.chromis.editor.JEditorStringNumber();
         m_jExpirationDate = new uk.chromis.editor.JEditorStringNumber();
-        m_jHolderName = new uk.chromis.editor.JEditorString();
-        jLabel8 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -181,12 +179,6 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
 
         m_jExpirationDate.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
 
-        m_jHolderName.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        m_jHolderName.setPreferredSize(new java.awt.Dimension(180, 25));
-
-        jLabel8.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel8.setText(AppLocal.getIntString("label.cardholder")); // NOI18N
-
         jLabel6.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel6.setText(AppLocal.getIntString("label.cardnumber")); // NOI18N
 
@@ -204,27 +196,20 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
                 .addGap(20, 20, 20)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(m_jExpirationDate, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(m_jHolderName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                        .addComponent(m_jCardNumber, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(46, Short.MAX_VALUE))
+                    .addComponent(m_jCardNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(m_jHolderName, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(5, 5, 5)
+                .addGap(50, 50, 50)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(m_jCardNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -251,14 +236,12 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private uk.chromis.editor.JEditorStringNumber m_jCardNumber;
     private uk.chromis.editor.JEditorStringNumber m_jExpirationDate;
-    private uk.chromis.editor.JEditorString m_jHolderName;
     private uk.chromis.editor.JEditorKeys m_jKeys;
     // End of variables declaration//GEN-END:variables
     

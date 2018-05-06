@@ -44,9 +44,13 @@ namespace PaymentGateway {
             methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "Initialize", "Initialize1", "()Z"));
             methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "close", "close2", "()V"));
             methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "Purchase", "Purchase3", "(Ljava/lang/String;Ljava/lang/String;)Lpaymentgateway/Receipt;"));
-            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "Refund", "Refund4", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lpaymentgateway/Receipt;"));
-            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "CloseBatch", "CloseBatch5", "()[Lpaymentgateway/BatchRecord;"));
-            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "process", "process6", "(D)Ljava/lang/String;"));
+            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "Purchase", "Purchase4", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lpaymen" +
+                        "tgateway/Receipt;"));
+            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "Refund", "Refund5", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lpaymentgateway/Receipt;"));
+            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "Refund", "Refund6", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/la" +
+                        "ng/String;)Lpaymentgateway/Receipt;"));
+            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "CloseBatch", "CloseBatch7", "()[Lpaymentgateway/BatchRecord;"));
+            methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "process", "process8", "(D)Ljava/lang/String;"));
             methods.Add(global::net.sf.jni4net.jni.JNINativeMethod.Create(@__type, "__ctorPay0", "__ctorPay0", "(Lnet/sf/jni4net/inj/IClrProxy;)V"));
             return methods;
         }
@@ -95,7 +99,19 @@ namespace PaymentGateway {
             return @__return;
         }
         
-        private static global::net.sf.jni4net.utils.JniHandle Refund4(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj, global::net.sf.jni4net.utils.JniLocalHandle orderId, global::net.sf.jni4net.utils.JniLocalHandle transId, global::net.sf.jni4net.utils.JniLocalHandle amount) {
+        private static global::net.sf.jni4net.utils.JniHandle Purchase4(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj, global::net.sf.jni4net.utils.JniLocalHandle orderId, global::net.sf.jni4net.utils.JniLocalHandle amount, global::net.sf.jni4net.utils.JniLocalHandle ccNum, global::net.sf.jni4net.utils.JniLocalHandle expiry) {
+            // (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lpaymentgateway/Receipt;
+            // (LSystem/String;LSystem/String;LSystem/String;LSystem/String;)LPaymentGateway/Receipt;
+            global::net.sf.jni4net.jni.JNIEnv @__env = global::net.sf.jni4net.jni.JNIEnv.Wrap(@__envp);
+            global::net.sf.jni4net.utils.JniHandle @__return = default(global::net.sf.jni4net.utils.JniHandle);
+            try {
+            global::PaymentGateway.Pay @__real = global::net.sf.jni4net.utils.Convertor.StrongJp2C<global::PaymentGateway.Pay>(@__env, @__obj);
+            @__return = global::net.sf.jni4net.utils.Convertor.StrongC2Jp<global::PaymentGateway.Receipt>(@__env, @__real.Purchase(global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, orderId), global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, amount), global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, ccNum), global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, expiry)));
+            }catch (global::System.Exception __ex){@__env.ThrowExisting(__ex);}
+            return @__return;
+        }
+        
+        private static global::net.sf.jni4net.utils.JniHandle Refund5(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj, global::net.sf.jni4net.utils.JniLocalHandle orderId, global::net.sf.jni4net.utils.JniLocalHandle transId, global::net.sf.jni4net.utils.JniLocalHandle amount) {
             // (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lpaymentgateway/Receipt;
             // (LSystem/String;LSystem/String;LSystem/String;)LPaymentGateway/Receipt;
             global::net.sf.jni4net.jni.JNIEnv @__env = global::net.sf.jni4net.jni.JNIEnv.Wrap(@__envp);
@@ -107,7 +123,19 @@ namespace PaymentGateway {
             return @__return;
         }
         
-        private static global::net.sf.jni4net.utils.JniHandle CloseBatch5(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj) {
+        private static global::net.sf.jni4net.utils.JniHandle Refund6(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj, global::net.sf.jni4net.utils.JniLocalHandle orderId, global::net.sf.jni4net.utils.JniLocalHandle transId, global::net.sf.jni4net.utils.JniLocalHandle amount, global::net.sf.jni4net.utils.JniLocalHandle ccNum, global::net.sf.jni4net.utils.JniLocalHandle expiry) {
+            // (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lpaymentgateway/Receipt;
+            // (LSystem/String;LSystem/String;LSystem/String;LSystem/String;LSystem/String;)LPaymentGateway/Receipt;
+            global::net.sf.jni4net.jni.JNIEnv @__env = global::net.sf.jni4net.jni.JNIEnv.Wrap(@__envp);
+            global::net.sf.jni4net.utils.JniHandle @__return = default(global::net.sf.jni4net.utils.JniHandle);
+            try {
+            global::PaymentGateway.Pay @__real = global::net.sf.jni4net.utils.Convertor.StrongJp2C<global::PaymentGateway.Pay>(@__env, @__obj);
+            @__return = global::net.sf.jni4net.utils.Convertor.StrongC2Jp<global::PaymentGateway.Receipt>(@__env, @__real.Refund(global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, orderId), global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, transId), global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, amount), global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, ccNum), global::net.sf.jni4net.utils.Convertor.StrongJ2CString(@__env, expiry)));
+            }catch (global::System.Exception __ex){@__env.ThrowExisting(__ex);}
+            return @__return;
+        }
+        
+        private static global::net.sf.jni4net.utils.JniHandle CloseBatch7(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj) {
             // ()[Lpaymentgateway/BatchRecord;
             // ()[LPaymentGateway/BatchRecord;
             global::net.sf.jni4net.jni.JNIEnv @__env = global::net.sf.jni4net.jni.JNIEnv.Wrap(@__envp);
@@ -119,7 +147,7 @@ namespace PaymentGateway {
             return @__return;
         }
         
-        private static global::net.sf.jni4net.utils.JniHandle process6(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj, double amount) {
+        private static global::net.sf.jni4net.utils.JniHandle process8(global::System.IntPtr @__envp, global::net.sf.jni4net.utils.JniLocalHandle @__obj, double amount) {
             // (D)Ljava/lang/String;
             // (D)LSystem/String;
             global::net.sf.jni4net.jni.JNIEnv @__env = global::net.sf.jni4net.jni.JNIEnv.Wrap(@__envp);

@@ -68,6 +68,10 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead {
         m_transactionID = transactionID;
     }
 
+    public boolean isAuthorization() {
+        return false;
+    }
+    
     /**
      *
      */
@@ -218,5 +222,11 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead {
     public String printTendered() {
         return Formats.CURRENCY.formatValue(m_dTendered);
     }
-
+    public boolean isTip()
+    {
+        return m_dTip>0;
+    }
+    public String printTip() {
+        return Formats.CURRENCY.formatValue(m_dTip);
+    }
 }

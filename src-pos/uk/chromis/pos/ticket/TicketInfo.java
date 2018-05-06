@@ -758,7 +758,9 @@ public final class TicketInfo implements SerializableRead, Externalizable {
     public String printTotal() {
         return Formats.CURRENCY.formatValue(getTotal());
     }
-    
+    public boolean isTip() {
+        return getTip()>0;
+    }
     public String printTip() {
         return Formats.CURRENCY.formatValue(getTip());
     }

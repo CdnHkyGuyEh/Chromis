@@ -51,7 +51,9 @@ public class PaymentInfoCash_original extends PaymentInfo {
     public PaymentInfo copyPayment(){
         return new PaymentInfoCash_original(m_dTotal, m_dPaid);
     }
-    
+        public boolean isAuthorization() {
+        return false;
+    }
     /**
      *
      * @return

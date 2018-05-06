@@ -56,7 +56,9 @@ public class PaymentInfoFree extends PaymentInfo {
     public String getTransactionID(){
         return "no ID";
     }
-
+    public boolean isAuthorization() {
+        return false;
+    }
     /**
      *
      * @return

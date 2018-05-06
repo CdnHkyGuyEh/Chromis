@@ -105,7 +105,14 @@ public class PaymentGatewayExt implements PaymentGateway {
             String[] order = payinfo.m_sTransactionID.split("\\|");
             if(order.length <2)
                 return;
-            r = c2.Refund(order[0],order[1],Double.toString(payinfo.getTotal()*-1));
+            if(payinfo.m_sCardNumber != null && payinfo.m_sCardNumber.length()>0)
+            {
+                r = c2.Refund(order[0],order[1],Double.toString(payinfo.getTotal()*-1),payinfo.m_sCardNumber,payinfo.m_sExpirationDate);
+            }
+            else
+            {
+                r = c2.Refund(order[0],order[1],Double.toString(payinfo.getTotal()*-1));
+            }
             
         }
         else
@@ -115,7 +122,14 @@ public class PaymentGatewayExt implements PaymentGateway {
                payinfo.m_sTransactionID = StringUtils.getCardNumber();
             }
             lastTrans = payinfo.m_sTransactionID;
-            r = c2.Purchase(payinfo.m_sTransactionID,Double.toString(payinfo.getTotal()));
+            if(payinfo.m_sCardNumber != null && payinfo.m_sCardNumber.length()>0)
+            {
+                r = c2.Purchase(payinfo.m_sTransactionID,Double.toString(payinfo.getTotal()),payinfo.m_sCardNumber,payinfo.m_sExpirationDate);
+            } 
+            else
+            {
+                r = c2.Purchase(payinfo.m_sTransactionID,Double.toString(payinfo.getTotal()));
+            }            
         }
         
         payinfo.r = r;

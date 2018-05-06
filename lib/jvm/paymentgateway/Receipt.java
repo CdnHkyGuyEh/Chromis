@@ -28,6 +28,12 @@ public class Receipt extends system.Object {
     @net.sf.jni4net.attributes.ClrMethod("()V")
     private native static void __ctorReceipt0(net.sf.jni4net.inj.IClrProxy thiz);
     
+    @net.sf.jni4net.attributes.ClrMethod("()I")
+    public native int getErrorCode();
+    
+    @net.sf.jni4net.attributes.ClrMethod("(I)V")
+    public native void setErrorCode(int value);
+    
     @net.sf.jni4net.attributes.ClrMethod("()LSystem/String;")
     public native java.lang.String getErrorMessage();
     

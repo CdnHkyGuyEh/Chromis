@@ -72,7 +72,7 @@ public abstract class PaymentInfo {
      * @return
      */
     public abstract double getTendered();
-
+    public abstract boolean isAuthorization();
     public abstract boolean isPaymentOK();
     /**
      *

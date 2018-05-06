@@ -36,8 +36,8 @@ public class PaymentInfoMagcard extends PaymentInfo {
     protected boolean ranTrans = false;
     protected double m_dTotal;
     protected String m_sHolderName;
-    protected String m_sCardNumber;
-    protected String m_sExpirationDate;
+    public String m_sCardNumber;
+    public String m_sExpirationDate;
     protected String track1;
     protected String track2;
     protected String track3;
@@ -132,6 +132,8 @@ public class PaymentInfoMagcard extends PaymentInfo {
     }
     public boolean isApplicationLabel()
     {
+        if(isApplicationPreferredName())
+            return false;
         if(r!=null){
             String s = r.getAppLabel();
             if(s==null || s.length()==0)
@@ -176,7 +178,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
     public boolean isEMVAid()
     {
         if(r!=null){
-            String s = r.getEmvCompletionData();
+            String s = r.getAid();
             if(s==null || s.length()==0)
                 return false;
             return true;
@@ -186,7 +188,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
     public String printEMVAid() //Maybe, cant tell tap doesnt work on this shit
     {
         if(r!=null){
-            String s = r.getEmvCompletionData();
+            String s = r.getAid();
             if(s==null || s.length()==0)
                 return " ";
             return s;
@@ -194,11 +196,40 @@ public class PaymentInfoMagcard extends PaymentInfo {
         return " ";
     }
     
+    public boolean isMalfunction() {
+        return printMalfunction().length()>1;            
+    }
+    
+    public String printMalfunction() {
+        if(r!=null)
+        {
+            if("Q".equals(r.getPanEntry())){
+                 if(english())
+                    return "CHIP CARD MALFUNCTION";
+                 else
+                    return "DÉFAILLANCE CARTE À PUCE";
+                
+            }
+
+        }
+        return "";
+    }
     public String printVerByPin(){
         if(r!=null)
         {
-            if(english()){
-                if ("P".equals(printCVMInd()) || "B".equals(printCVMInd()))
+            if(r.getErrorCode()!=0){
+                    return " ";
+            }
+            String rc = r.getResponseCode();
+            int iRc = Integer.parseInt(rc);
+            if(iRc==990)
+                return english() ? "DECLINED BY CARD-990" : "REFUSEE PAR LA CARTE-990";            
+            else if (iRc==991)
+                return english() ? "CARD REMOVED-991" : "CARTE RETIREE-991";
+
+            if(english())
+            {                
+                if ( iRc <= 49 && ("P".equals(printCVMInd()) || "B".equals(printCVMInd())))
                 {
                     return "VERIFIED BY PIN";
                 }
@@ -209,7 +240,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
             }
             else
             {
-                if ("P".equals(printCVMInd()) || "B".equals(printCVMInd()))
+                if ( iRc <= 49 && ("P".equals(printCVMInd()) || "B".equals(printCVMInd())))
                 {
                     return "VERIFIEE PAR NIP";
                 }
@@ -221,6 +252,53 @@ public class PaymentInfoMagcard extends PaymentInfo {
         }
         return " ";
     }
+    public String printReversalMsg()
+    {
+        if(r.getErrorCode()!=0){
+                return " ";
+        }
+        String rc = r.getResponseCode();
+        int iRc = Integer.parseInt(rc);
+        if(iRc==990)
+            return english() ? "DECLINED BY CARD-990" : "REFUSEE PAR LA CARTE-990";            
+        else if (iRc==991)
+            return english() ? "CARD REMOVED-991" : "CARTE RETIREE-991";
+        return "";
+    }
+    public boolean isReversalMsg()
+    {
+        if(printReversalMsg().length()>0)
+            return true;
+        return false;
+    }
+    
+    public boolean isChipSwiped()
+    {
+        if(r!=null)
+            return "F".equals(r.getPanEntry());
+        return false;
+    }
+    public String printChipSwiped()
+    {
+        if(r!=null)
+        {
+            if(english()){
+                if("F".equals(r.getPanEntry()))
+                {
+                    return "CHIP CARD SWIPED";                
+                }
+            }
+            else
+            {
+                if("F".equals(r.getPanEntry()))
+                {
+                    return "CARTE A PUCE GLISSEE";                
+                }
+            }                    
+        }
+        return "";
+    }
+    
     public boolean isVerByPin()
     {
         if(printVerByPin().length()>1)
@@ -232,6 +310,20 @@ public class PaymentInfoMagcard extends PaymentInfo {
     {
         if(english()){
             if(r!=null){
+                int e = r.getErrorCode();
+                
+                if(e!=0 && e != 2){
+                    String err = r.getErrorMessage();
+                    if("Pospad Error Code: 401".equals(err.trim()))
+                        return "Transaction Cancelled";
+                    
+                    return err;
+                }
+                if(e==2)
+                {
+                    return "Transaction Cancelled";
+                }
+                
                 String rc = r.getResponseCode();
 
                 int iRc = Integer.parseInt(rc);
@@ -239,18 +331,26 @@ public class PaymentInfoMagcard extends PaymentInfo {
                 {
                     return r.getIsoCode() + " Approved - Thank You "+r.getResponseCode();    
                 }
-                String ct = r.getCardType();
-                int iso = Integer.parseInt(r.getIsoCode());
-                if("D".equals(ct) && (iso==5 || iso == 51 || iso==54 || iso==55 || iso ==57 || iso ==58 || iso == 61 || iso == 62 || iso ==65 || iso == 75 || iso == 82 || iso == 92))
-                    return r.getIsoCode() + " Transaction Not Approved "+r.getResponseCode();    
+                String ct = r.getCardType().trim();
+                                String isoCode = r.getIsoCode();
+                int iso=-255;
+                if(isoCode != null && isoCode.trim().length()>0)
+                    iso = Integer.parseInt(isoCode);
+                else
+                    isoCode="";
+                if(("D".equals(ct) || "P".equals(ct)) && (iso==5 || iso == 51 || iso==54 || iso==55 || iso ==57 || iso ==58 || iso == 61 || iso == 62 || iso ==65 || iso == 75 || iso == 82 || iso == 92))
+                    return isoCode + " Transaction Not Approved "+r.getResponseCode();    
 
                 else
-                    return r.getIsoCode() +" Transaction Not Completed "+ r.getResponseCode();                        
+                    return isoCode +" Transaction Not Completed";                        
             }
         }
         else
         {
             if(r!=null){
+                if(r.getErrorCode()!=0){
+                    return r.getErrorMessage();
+                }
                 String rc = r.getResponseCode();
 
                 int iRc = Integer.parseInt(rc);
@@ -258,13 +358,18 @@ public class PaymentInfoMagcard extends PaymentInfo {
                 {
                     return r.getIsoCode() + " Approuvee - Merci "+r.getResponseCode();    
                 }
-                String ct = r.getCardType();
-                int iso = Integer.parseInt(r.getIsoCode());
-                if("D".equals(ct) && (iso==5 || iso == 51 || iso==54 || iso==55 || iso ==57 || iso ==58 || iso == 61 || iso == 62 || iso ==65 || iso == 75 || iso == 82 || iso == 92))
-                    return r.getIsoCode() + " Opération Refusée "+r.getResponseCode();    
+                String ct = r.getCardType().trim();
+                String isoCode = r.getIsoCode();
+                int iso=-255;
+                if(isoCode != null && isoCode.trim().length()>0)
+                    iso = Integer.parseInt(isoCode);
+                else
+                    isoCode="";
+                if(("D".equals(ct) || "P".equals(ct)) && (iso==5 || iso == 51 || iso==54 || iso==55 || iso ==57 || iso ==58 || iso == 61 || iso == 62 || iso ==65 || iso == 75 || iso == 82 || iso == 92))
+                    return isoCode + " Opération Refusée "+r.getResponseCode();    
 
                 else
-                    return r.getIsoCode() +" Opération non Complétée "+ r.getResponseCode();                        
+                    return isoCode +" Opération non Complétée";                        
             }
         }
         return " ";
@@ -334,9 +439,14 @@ public String printCVMInd()
     
     public String printReferenceNum()
     {
-        if(r!=null)
-            return r.getRefNum() + " "+r.getPanEntry();
+        if(r!=null){
+            String pan = r.getPanEntry();
+            if("Q".equals(pan)) //for reasons?
+                pan="C";
+            return r.getRefNum() + " "+pan;
+        }
         return " ";
+        
     }
     
     public String printTransDate()
@@ -529,13 +639,39 @@ public String printCVMInd()
         
         if(ct!=null && "INTERAC".equals(ct.toUpperCase()))
             return false;
+        
+        if(r.getErrorCode()!=0){
+                    return false;
+        }
+        
         String panEntry = r.getPanEntry();
         String cvm = r.getCvmIndicator();
-        if((cvm == null  && !"T".equals(panEntry)) 
-                || "S".equals(cvm) || "B".equals(cvm) || (cvm != null && cvm.length() ==0 && !"T".equals(panEntry)))
+        String rc = r.getResponseCode();
+
+        int iRc = Integer.parseInt(rc);
+        if(iRc <=49 && ((cvm == null  && !"T".equals(panEntry)) 
+                || "S".equals(cvm) || "B".equals(cvm) || (cvm != null && cvm.length() ==0 && !"T".equals(panEntry))))
             return true;
         return false;
     }
+    
+    public boolean isClientSignatureRequired()
+    {
+        String ct = getCardType();
+        
+        if(ct!=null && "INTERAC".equals(ct.toUpperCase()))
+            return false;
+        String panEntry = r.getPanEntry();
+        String cvm = r.getCvmIndicator();
+        String rc = r.getResponseCode();
+
+        int iRc = Integer.parseInt(rc);
+        if(iRc <=49 && ((cvm == null  && !"T".equals(panEntry)) 
+                || "S".equals(cvm) || "B".equals(cvm) || (cvm != null && cvm.length() ==0 && !"T".equals(panEntry))))
+            return true;
+        return false;
+    }
+    
     /**
      * Get tracks of magnetic card.
      *   Framing characters: 
@@ -582,7 +718,9 @@ public String printCVMInd()
     public String getAuthorization() {
         return m_sAuthorization;
     }
-
+    public boolean isAuthorization() {
+        return m_sAuthorization!=null && m_sAuthorization.length()>0;
+    }
     /**
      *
      * @return
@@ -590,6 +728,7 @@ public String printCVMInd()
     public String getMessage() {
         return m_sAuthorization;
     }
+    
     
     /**
      *
@@ -606,7 +745,12 @@ public String printCVMInd()
         return r.getTransDate()+" " + r.getTransTime();
     }
 
-    
+    public boolean isDateTime()
+    {
+        if(printDateTime().length()>1)
+            return true;
+        return false;
+    }
     
     /**
      *
