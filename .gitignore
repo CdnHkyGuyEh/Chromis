@@ -1,7 +1,6 @@
 /build.xml
 /nbproject/
 /Bitrockimages/
-/dist/
 /build/
 /manifest.mf
 /derby.log
@@ -10,6 +9,5 @@
 /chromispos.xml.backup
 /src-pos.zip
 /src-beans/uk/chromis/fixedimages/Thumbs.db
-chromispos.jar
 /chromisLiquibase.log
 /log4j.xml
