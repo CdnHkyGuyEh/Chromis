@@ -211,12 +211,16 @@ public class StartPOS {
                 String hostname = AppConfig.getInstance().getProperty("machine.hostname");
                 TicketInfo.setHostname(hostname);
 try{
+    logger.log(Level.WARNING, "Loading payment bridge shim");
                 Bridge.init();
-                Bridge.LoadAndRegisterAssemblyFrom(new File("d:\\Chromis\\lib\\Payment2.j4n.dll"));
+                Bridge.LoadAndRegisterAssemblyFrom(new File("lib\\Payment2.j4n.dll"));
                 
                 PaymentGatewayExt.initialize(); //prime moneris
 }
-catch (Exception e){ }
+catch (Exception e){ 
+
+    logger.log(Level.WARNING, "Loading payment bridge shim failed",e);
+}
                 String screenmode = AppConfig.getInstance().getProperty("machine.screenmode");
                 if ("fullscreen".equals(screenmode)) {
                     JRootKiosk rootkiosk = new JRootKiosk();
